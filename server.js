@@ -13,42 +13,43 @@ const passport = require('passport');
 
 container.resolve(function(users, _) {
 
-  mongoose.Promise = global.Promise;
+	mongoose.Promise = global.Promise;
 
-  mongoose.connect('mongodb://localhost/footballkik', { useMongoClient:true });
+	mongoose.connect('mongodb://localhost/footballkik', { useMongoClient:true });
 
-  const app = setupExpress();
+	const app = setupExpress();
 
-  function setupExpress(){
-    const app = express();
-    const server = http.createServer(app);
-    server.listen(3080, () => {
-      console.log('Listening on port 3080');
-    });
-    ConfigureExpress(app);
+	function setupExpress(){
+		const app = express();
+		const server = http.createServer(app);
+		server.listen(3080, () => {
+			console.log('Listening on port 3080');
+		});
+		ConfigureExpress(app);
 
-    const router = require('express-promise-router')();
-    users.SetRouting(router);
-    app.use(router);
-  }
+		const router = require('express-promise-router')();
+		users.SetRouting(router);
+		app.use(router);
+	}
 
-  function ConfigureExpress(app){
-    require('./passport/passport-local');
-    app.use(express.static('public'));
-    app.use(cookieParser());
-    app.set('view engine', 'ejs');
-    app.use(bodyParser.json());
-    app.use(validator());
-    app.use(session({
-      secret:'fullmetal%$@&',
-      resave: true,
-      saveUninitialized: false,
-      store: new MongoStore({ mongooseConnection: mongoose.connection})
-    }))
-    app.use(flash());
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.locals._ = _;
-  }
+	function ConfigureExpress(app){
+		require('./passport/passport-local');
+		app.use(express.static('public'));
+		app.use(cookieParser());
+		app.set('view engine', 'ejs');
+		app.use(bodyParser.json());
+		app.use(bodyParser.urlencoded({ extended: false }));
+		app.use(validator());
+		app.use(session({
+			secret:'fullmetal%$@&',
+			resave: true,
+			saveUninitialized: false,
+			store: new MongoStore({ mongooseConnection: mongoose.connection})
+		}))
+		app.use(flash());
+		app.use(passport.initialize());
+		app.use(passport.session());
+		app.locals._ = _;
+	}
 
 });
