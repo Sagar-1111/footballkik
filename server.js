@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const http = require('http');
+const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const validator = require('express-validator');
 const session = require('express-session');
@@ -34,7 +35,9 @@ container.resolve(function(users, _) {
 
 	function ConfigureExpress(app){
 		require('./passport/passport-local');
+		require('./passport/passport-facebook');
 		app.use(express.static('public'));
+		app.use(morgan('dev'));
 		app.use(cookieParser());
 		app.set('view engine', 'ejs');
 		app.use(bodyParser.json());
